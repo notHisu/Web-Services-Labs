@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VnExpress RSS Feed</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Personal RSS Feed</h1>
+      <p>
+        This page fetches the latest news from the custom RSS feed and displays
+        them as a list of links.
+      </p>
+      <form id="rss-form">
+        <select id="rss-url">
+          <option value="https://vnexpress.net/rss/thoi-su.rss">
+            VNExpress - Thời sự
+          </option>
+          <option value="https://tuoitre.vn/rss/nhip-song-so.rss">
+            Tuoitre - Công nghệ
+          </option>
+          <option
+            value="https://rss.nytimes.com/services/xml/rss/nyt/Business.xml"
+          >
+            The New York Times - Kinh doanh
+          </option>
+        </select>
+        <button type="submit">Submit</button>
+      </form>
+      <ul id="rss-list"></ul>
+    </div>
+
+    <script>
+      document
+        .getElementById("rss-form")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+          const rssUrl = document.getElementById("rss-url").value;
+          if (!rssUrl) {
+            alert("Please enter a valid RSS feed URL.");
+            return;
+          }
+
+          const response = await fetch(
+            `http://localhost:3000/rss?url=${encodeURIComponent(rssUrl)}`
+          );
+          const data = await response.json();
+
+          const rssList = document.getElementById("rss-list");
+          rssList.innerHTML = ""; // Clear previous results
+
+          data.items.splice(0, 5).forEach((item) => {
+            const li = document.createElement("li");
+            /*         const img = document.createElement("img");
+            img.src = item.thumbnail[0];
+            li.appendChild(img); */
+
+            const a = document.createElement("a");
+            a.href = item.link[0];
+            a.target = "_blank";
+            a.textContent = item.title[0];
+            li.appendChild(a);
+
+            const content = item.description[0] || "";
+            const plainTextContent = content.replace(/<\/?[^>]+(>|$)/g, "");
+            const words = plainTextContent.split(" ").splice(0, 20).join(" ");
+            const p = document.createElement("p");
+            p.textContent = words + "...";
+            li.appendChild(p);
+
+            rssList.appendChild(li);
+          });
+        });
+    </script>
+  </body>
+</html>
