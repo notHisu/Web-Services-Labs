@@ -22,6 +22,12 @@
       <p id="userFullName"></p>
       <p id="userScore"></p>
     </div>
+    <h2>Trigger Errors</h2>
+    <button id="triggerInformational">Trigger 1xx</button>
+    <button id="triggerSuccess">Trigger 2xx</button>
+    <button id="triggerRedirection">Trigger 3xx</button>
+    <button id="triggerClientError">Trigger 4xx</button>
+    <button id="triggerServerError">Trigger 5xx</button>
     <script>
       document
         .getElementById("loginForm")
@@ -55,6 +61,46 @@
             alert(result.message);
           }
         });
+
+      async function triggerError(url) {
+        try {
+          const response = await fetch(url);
+          const text = await response.text();
+          alert(`Status: ${response.status}\nMessage: ${text}`);
+        } catch (error) {
+          alert(`Error: ${error.message}`);
+        }
+      }
+
+      document
+        .getElementById("triggerInformational")
+        .addEventListener("click", () =>
+          triggerError("http://localhost:3000/informational")
+        );
+
+      document
+        .getElementById("triggerSuccess")
+        .addEventListener("click", () =>
+          triggerError("http://localhost:3000/success")
+        );
+
+      document
+        .getElementById("triggerRedirection")
+        .addEventListener("click", () =>
+          triggerError("http://localhost:3000/redirection")
+        );
+
+      document
+        .getElementById("triggerClientError")
+        .addEventListener("click", () =>
+          triggerError("http://localhost:3000/client-error")
+        );
+
+      document
+        .getElementById("triggerServerError")
+        .addEventListener("click", () =>
+          triggerError("http://localhost:3000/server-error")
+        );
     </script>
   </body>
 </html>
